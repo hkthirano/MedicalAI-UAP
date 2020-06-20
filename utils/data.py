@@ -12,8 +12,16 @@ from tqdm import tqdm
 FILE_NAME = 0
 LABEL = 1
 
+mapping_chestx = {'NORMAL': 0, 'PNEUMONIA': 1}
+mapping_oct = {'CNV': 0, 'DME': 1, 'DRUSEN': 2, 'NORMAL': 3}
+mapping_melanoma = {'MEL': 0, 'NV': 1, 'BCC': 2,
+                    'AKIEC': 3, 'BKL': 4, 'DF': 5, 'VASC': 6}
+mapping_dict = {'chestx': mapping_chestx,
+                'oct': mapping_oct, 'melanoma': mapping_melanoma}
 
-def make_data(df_files, img_dir, mapping, dataset='chestx'):
+
+def make_data(df_files, img_dir, dataset='chestx'):
+    mapping = mapping_dict[dataset]
     X, y = [], []
     for idx, row in tqdm(df_files.iterrows(), total=df_files.shape[0]):
         img_path = os.path.join(img_dir, row[FILE_NAME])
