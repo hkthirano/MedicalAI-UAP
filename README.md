@@ -75,7 +75,7 @@ python generate_nontargeted_uap.py --dataset chestx
 python generate_targeted_uap.py --dataset chestx --target PNEUMONIA
 # `--target` argument indicates the target class:
 #   when dataset is chestx  , the target class: NORMAL or PNEUMONIA (default).
-#   when dataset is oct     , tar target class: CNV, DME, DRUSEN, NORMAL.
+#   when dataset is oct     , tar target class: CNV, DME, DRUSEN or NORMAL.
 #   when dataset is melanoma, tar target class: MEL, NV, BCC, AKIEC, BKL, DF or VASC.
 
 # random UAP
