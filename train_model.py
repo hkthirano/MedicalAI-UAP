@@ -4,23 +4,27 @@ import numpy as np
 from keras.callbacks import LearningRateScheduler, ModelCheckpoint
 from keras.preprocessing.image import ImageDataGenerator
 
-from utils import (BalancedDataGenerator, get_acc, load_data, load_model,
-                   plotConfMat, set_gpu)
+from utils.config import set_gpu
+from utils.data import BalancedDataGenerator, load_data
+from utils.model import load_model
+from utils.plot import make_confusion_matrix
+from utils.utils import get_acc
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--dataset', type=str, default='chestx')
 parser.add_argument('--model', type=str, default='inceptionv3')
-parser.add_argument('--gpu', type=str)
+parser.add_argument('--gpu', type=str, default='0')
 args = parser.parse_args()
 
 set_gpu(args.gpu)
 
-X_train, X_test, y_train, y_test = load_data(dataset=args.dataset)
+X_train, X_test, y_train, y_test = load_data(
+    dataset=args.dataset, normalize=True)
 
 model = load_model(
     dataset=args.dataset,
-    num_class=y_train.shape[1],
-    model=args.model,
+    nb_class=y_train.shape[1],
+    model_type=args.model,
     mode='train'
 )
 
@@ -36,13 +40,11 @@ def step_decay(epoch):
 
 
 epoch = 50
-lr_decay = LearningRateScheduler(step_decay)
 batch_size = 32
-
+lr_decay = LearningRateScheduler(step_decay)
 save_model = 'data/{}/model/{}.h5'.format(args.dataset, args.model)
 cb1 = ModelCheckpoint(save_model, monitor='val_acc', verbose=1,
                       save_best_only=True, save_weights_only=True)
-
 datagen = ImageDataGenerator(rotation_range=5,
                              width_shift_range=0.05,
                              height_shift_range=0.05)
@@ -70,25 +72,25 @@ else:
 preds_train = np.argmax(model.predict(X_train), axis=1)
 preds_test = np.argmax(model.predict(X_test), axis=1)
 
-acc_train = get_acc(np.argmax(y_train, axis=1), preds_train)
-acc_test = get_acc(np.argmax(y_test, axis=1), preds_test)
+acc_train = get_acc(y=np.argmax(y_train, axis=1), preds=preds_train)
+acc_test = get_acc(y=np.argmax(y_test, axis=1), preds=preds_test)
 
-save_file_train = 'data/{}/conf_mat/train_{}.png'.format(
+save_f_train = 'data/{}/conf_mat/train_{}.png'.format(
     args.dataset, args.model)
-save_file_test = 'data/{}/conf_mat/test_{}.png'.format(
+save_f_test = 'data/{}/conf_mat/test_{}.png'.format(
     args.dataset, args.model)
 
-plotConfMat(
+make_confusion_matrix(
     y_row=np.argmax(y_train, axis=1),
     y_col=preds_train,
-    save_file_name=save_file_train,
+    save_file_name=save_f_train,
     dataset=args.dataset,
     title='acc_train : {:.3f}'.format(acc_train)
 )
-plotConfMat(
+make_confusion_matrix(
     y_row=np.argmax(y_test, axis=1),
     y_col=preds_test,
-    save_file_name=save_file_test,
+    save_file_name=save_f_test,
     dataset=args.dataset,
     title='acc_test : {:.3f}'.format(acc_test)
 )

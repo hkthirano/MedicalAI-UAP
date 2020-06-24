@@ -3,7 +3,7 @@ import argparse
 import numpy as np
 import pandas as pd
 
-from utils import make_data
+from utils.data import make_data
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--dataset', default='chestx')
@@ -11,10 +11,12 @@ parser.add_argument(
     '--img_dir', default='../dataset/CellData/chest_xray')
 args = parser.parse_args()
 
-train_files = 'data/{}/train_pre.csv'.format(args.dataset)
-test_files = 'data/{}/test_pre.csv'.format(args.dataset)
-df_train = pd.read_csv(train_files, header=None)
-df_test = pd.read_csv(test_files, header=None)
+df_train = pd.read_csv(
+    'data/{}/train_pre.csv'.format(args.dataset),
+    header=None)
+df_test = pd.read_csv(
+    'data/{}/test_pre.csv'.format(args.dataset),
+    header=None)
 
 X_train, y_train = make_data(
     df_files=df_train,

@@ -9,32 +9,27 @@ from keras.utils.data_utils import Sequence
 from sklearn.preprocessing import OneHotEncoder
 from tqdm import tqdm
 
+from .config import label2nb_dict
+
 FILE_NAME = 0
 LABEL = 1
 
-mapping_chestx = {'NORMAL': 0, 'PNEUMONIA': 1}
-mapping_oct = {'CNV': 0, 'DME': 1, 'DRUSEN': 2, 'NORMAL': 3}
-mapping_melanoma = {'MEL': 0, 'NV': 1, 'BCC': 2,
-                    'AKIEC': 3, 'BKL': 4, 'DF': 5, 'VASC': 6}
-mapping_dict = {'chestx': mapping_chestx,
-                'oct': mapping_oct, 'melanoma': mapping_melanoma}
-
 
 def make_data(df_files, img_dir, dataset='chestx'):
-    mapping = mapping_dict[dataset]
+    mapping = label2nb_dict[dataset]
     X, y = [], []
     for idx, row in tqdm(df_files.iterrows(), total=df_files.shape[0]):
         img_path = os.path.join(img_dir, row[FILE_NAME])
         if dataset == 'chestx':
             img = img_to_array(load_img(img_path, grayscale=True,
                                         color_mode='gray', target_size=(299, 299)))
-        elif dataset == 'melanoma':
-            img = img_to_array(load_img(img_path, grayscale=False,
-                                        color_mode='rgb', target_size=(299, 299)))
         elif dataset == 'oct':
             img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
             img = cv2.resize(img, (299, 299))
             img = np.reshape(img, (299, 299, 1))
+        elif dataset == 'melanoma':
+            img = img_to_array(load_img(img_path, grayscale=False,
+                                        color_mode='rgb', target_size=(299, 299)))
         X.append(img)
         y.append(mapping[row[LABEL]])
     X = np.asarray(X, dtype='float32')
@@ -46,16 +41,28 @@ def make_data(df_files, img_dir, dataset='chestx'):
     return X, y
 
 
-def load_data(dataset='chestx', normalize=True, norm=False):
+def load_data(dataset='chestx', normalize=True, norm=False, dbg=False):
     X_train = np.load('data/{}/X_train.npy'.format(dataset))
     X_test = np.load('data/{}/X_test.npy'.format(dataset))
     y_train = np.load('data/{}/y_train.npy'.format(dataset))
     y_test = np.load('data/{}/y_test.npy'.format(dataset))
-
+    if dbg:
+        X_train, y_train = X_train[:200], y_train[:200]
+    if norm:
+        mean_l2_train = 0
+        mean_inf_train = 0
+        for im in X_train:
+            mean_l2_train += np.linalg.norm(im[:, :, 0].flatten(), ord=2)
+            mean_inf_train += np.abs(im[:, :, 0].flatten()).max()
+        mean_l2_train /= len(X_train)
+        mean_inf_train /= len(X_train)
     if normalize:
         X_train = (X_train - 128.0) / 128.0
         X_test = (X_test - 128.0) / 128.0
-    return X_train, X_test, y_train, y_test
+    if norm:
+        return X_train, X_test, y_train, y_test, mean_l2_train, mean_inf_train
+    else:
+        return X_train, X_test, y_train, y_test
 
 
 class BalancedDataGenerator(Sequence):
