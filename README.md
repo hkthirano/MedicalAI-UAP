@@ -33,31 +33,30 @@ MIT licensed. Happy if you cite our study when using the codes:
 
 ### 2. Download the following datasets.
 
-- Chest X-ray and OCT images
-    - [Identifying Medical Diagnoses and Treatable Diseases by Image-Based Deep Learning](https://www.sciencedirect.com/science/article/pii/S0092867418301545?via%3Dihub)
-- Diagnosis of melanoma from dermoscopic images
+- Skin lesion images
     - [ISIC2018 Task 3: Lesion Diagnosis: Training](https://challenge2018.isic-archive.com/task3/training/)
-
+- OCT and Chest X-ray images
+    - [Identifying Medical Diagnoses and Treatable Diseases by Image-Based Deep Learning](https://www.sciencedirect.com/science/article/pii/S0092867418301545?via%3Dihub)
 
 ### 3. Generate the dataset.
 
 ```sh
-# chestx
-python make_data.py --dataset chestx --img_dir ../dataset/CellData/chest_xray
+# malanoma
+python make_data.py --dataset melanoma --img_dir ../dataset/ISIC2018_Task3_Training_Input
 
 # oct
 python make_data.py --dataset oct --img_dir ../dataset/CellData/OCT
 
-# malanoma
-python make_data.py --dataset melanoma --img_dir ../dataset/ISIC2018_Task3_Training_Input
+# chestx
+python make_data.py --dataset chestx --img_dir ../dataset/CellData/chest_xray
 ```
 
 ### 4. Train
 
 ```sh
-python train_model.py --dataset chestx --model inceptionv3
+python train_model.py --dataset melanoma --model inceptionv3
 
-# `--dataset` argument indicates the dataset: chestx (default), oct or melanoma.
+# `--dataset` argument indicates the dataset: melanoma, oct or chestx (default).
 # `--model` argument indicates the model: inceptionv3 (default), vgg16, vgg19, resnet50, inceptionresnetv2, densenet121 or densenet169.
 ```
 
@@ -69,29 +68,21 @@ python train_model.py --dataset chestx --model inceptionv3
 
 ```sh
 # non-targeted UAP
-python generate_nontargeted_uap.py --dataset chestx
+python generate_nontargeted_uap.py --dataset melanoma
 
-# UAP for targeted attacks to PNEUMONIA
-python generate_targeted_uap.py --dataset chestx --target PNEUMONIA
+# UAP for targeted attacks to MEL
+python generate_targeted_uap.py --dataset melanoma --target MEL
 # `--target` argument indicates the target class:
-#   when dataset is chestx  , the target class: NORMAL or PNEUMONIA (default).
-#   when dataset is oct     , tar target class: CNV, DME, DRUSEN or NORMAL.
 #   when dataset is melanoma, tar target class: MEL, NV, BCC, AKIEC, BKL, DF or VASC.
+#   when dataset is oct     , tar target class: CNV, DME, DRUSEN or NORMAL.
+#   when dataset is chestx  , the target class: NORMAL or PNEUMONIA (default).
 
 # random UAP
-python generate_random_uap.py --dataset chestx
+python generate_random_uap.py --dataset melanoma
 ```
 
 ### 7. Results
 
-The targeted UAP causes the Inception-v3 models to classify most normal medical images into disease.
+The targeted UAP causes the Inception-v3 models to classify most skin lesion images into melanoma.
 
-- chestx: target PNEUMONIA
-
-    Targeted success rate: [train](result/chestx/conf_mat/train_targeted_inceptionv3_PNEUMONIA_l2_eps0.020.png), [test](result/chestx/conf_mat/test_targeted_inceptionv3_PNEUMONIA_l2_eps0.020.png)
-
-    ![img1](result/chestx/imshow/targeted_inceptionv3_PNEUMONIA_l2_eps0.020.png)
-
-- oct: target CNV
-
-- melanoma: target MEL
+![img1](assets/melanoma.png)
