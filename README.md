@@ -73,8 +73,8 @@ python generate_nontargeted_uap.py --dataset melanoma
 # UAP for targeted attacks to MEL
 python generate_targeted_uap.py --dataset melanoma --target MEL
 # `--target` argument indicates the target class:
-#   when dataset is melanoma, tar target class: MEL, NV, BCC, AKIEC, BKL, DF or VASC.
-#   when dataset is oct     , tar target class: CNV, DME, DRUSEN or NORMAL.
+#   when dataset is melanoma, the target class: MEL, NV, BCC, AKIEC, BKL, DF or VASC.
+#   when dataset is oct     , the target class: CNV, DME, DRUSEN or NORMAL.
 #   when dataset is chestx  , the target class: NORMAL or PNEUMONIA (default).
 
 # random UAP
