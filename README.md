@@ -1,6 +1,6 @@
 # MedicalAI-UAP
 
-This repository contains the codes used in our study on *[Universal adversarial attacks on deep neural networks for medical image classification](https://www.researchsquare.com/article/rs-70727/v1)*.
+This repository contains the codes used in our study on *[Universal adversarial attacks on deep neural networks for medical image classification](https://doi.org/10.1186/s12880-020-00530-y)*.
 
 ## Terms of use
 
