@@ -4,7 +4,7 @@ This repository contains the codes used in our study on *[Universal adversarial 
 
 ## Terms of use
 
-MIT licensed. Happy if you cite our study when using the codes:
+MIT licensed. Happy if you cite our paper when using the codes:
 
  H, Minagi K & Takemoto K (2021) **Universal adversarial attacks on deep neural networks for medical image classification.** BMC Med. Imaging 21, 9. doi:[10.1186/s12880-020-00530-y](https://doi.org/10.1186/s12880-020-00530-y)
 
